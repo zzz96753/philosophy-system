@@ -3,3 +3,15 @@ logs/
 *.swp
 *.swo
 *~
+
+# LaTeX 编译中间产物
+**/排版/*.aux
+**/排版/*.log
+**/排版/*.out
+**/排版/*.fls
+**/排版/*.fdb_latexmk
+**/排版/*.toc
+**/排版/*.xdv
+**/排版/*.png
+**/排版/build.log
+**/排版/story.pdf
