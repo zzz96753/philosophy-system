@@ -4,11 +4,12 @@
 \usepackage{geometry}
 \geometry{top=2.8cm,bottom=2.8cm,left=2.8cm,right=2.8cm}
 
-% ---------- 字体（宋体正文 / 黑体标题 / 楷体引文）----------
-\setCJKmainfont{AR PL UMing CN}
-\setCJKsansfont{WenQuanYi Zen Hei}
-\newCJKfontfamily\kai{AR PL KaitiM GB}
-\newCJKfontfamily\hei{WenQuanYi Zen Hei}
+% ---------- 字体（思源黑体 / 苹方观感：正文Regular·标题Bold·引文Light·强调Medium）----------
+\setCJKmainfont{Noto Sans CJK SC}[BoldFont={Noto Sans CJK SC Bold}]
+\setCJKsansfont{Noto Sans CJK SC}
+\newCJKfontfamily\hei{Noto Sans CJK SC}[BoldFont={Noto Sans CJK SC Bold}]
+\newCJKfontfamily\notolight{Noto Sans CJK SC Light}
+\newCJKfontfamily\notomed{Noto Sans CJK SC Medium}
 
 % ---------- 颜色 ----------
 \usepackage{xcolor}
@@ -56,7 +57,7 @@
   enhanced, breakable,
   colback=accentbg, colframe=accent, boxrule=0.6pt,
   left=12pt,right=12pt,top=9pt,bottom=9pt,
-  fontupper=\kai\color{ink}, arc=2pt,
+  fontupper=\notolight\color{ink}, arc=2pt,
   borderline west={3pt}{0pt}{accent}
 }
 % 旁注 / 提示框
@@ -64,13 +65,13 @@
   enhanced, breakable,
   colback=notebg, colframe=notebg, boxrule=0pt,
   left=12pt,right=12pt,top=7pt,bottom=7pt,
-  fontupper=\kai\color{ink!85}, arc=1pt,
+  fontupper=\notolight\color{ink!85}, arc=1pt,
   borderline west={3pt}{0pt}{notebar}
 }
 % 延伸阅读
 \newcommand{\link}[1]{{\par\smallskip\noindent\hspace*{2em}\small\sffamily\color{link}\,»\,#1\par\smallskip}}
 % 名言强调
-\newcommand{\saying}[1]{{\kai\color{accent}#1}}
+\newcommand{\saying}[1]{{\notomed\color{accent}#1}}
 
 \begin{document}
 
@@ -80,9 +81,9 @@
 \vspace*{3.2cm}
 {\color{rule}\rule{0.5\textwidth}{0.8pt}}\\[1.1cm]
 {\Huge\hei\bfseries\color{ink} 哲 学 的 故 事}\\[0.7cm]
-{\LARGE\kai\color{accent} 一场跨越 2500 年的对话}\\[1.1cm]
+{\LARGE\notolight\color{accent} 一场跨越 2500 年的对话}\\[1.1cm]
 {\color{rule}\rule{0.5\textwidth}{0.8pt}}\\[2.2cm]
-{\large\kai\color{ink!80} 人能认识世界吗？人该怎样活？\\[0.4em]
+{\large\notolight\color{ink!80} 人能认识世界吗？人该怎样活？\\[0.4em]
 而到了最后——我们造出的机器，能思考吗？}\\[3.5cm]
 {\normalsize\sffamily\color{notebar} 哲学体系 · 叙事式入口}\\[0.3em]
 {\small\sffamily\color{notebar} 2026}
@@ -272,7 +273,7 @@
 
 \begin{center}
 \vspace{0.6em}
-{\kai\color{accent}\Large 故事讲完了。现在，轮到你了。}
+{\notomed\color{accent}\Large 故事讲完了。现在，轮到你了。}
 \vspace{0.4em}
 \end{center}
 
