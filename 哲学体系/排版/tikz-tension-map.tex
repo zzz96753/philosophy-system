@@ -1,0 +1,51 @@
+\documentclass[border=10pt]{standalone}
+\usepackage{xeCJK}
+\setCJKmainfont{LXGW WenKai}
+\newCJKfontfamily\kaiM{LXGW WenKai Medium}
+\usepackage{xcolor}
+\definecolor{ink}{HTML}{1F2D3D}
+\definecolor{accent}{HTML}{8C2A2A}
+\definecolor{accentbg}{HTML}{FBF1EE}
+\definecolor{notebg}{HTML}{F4F6F8}
+\definecolor{notebar}{HTML}{B7C0CA}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+
+\begin{document}
+\begin{tikzpicture}[
+  font=\footnotesize,
+  qbox/.style={rectangle, rounded corners=6pt, draw=accent, line width=1pt,
+               fill=white, align=center, inner sep=8pt, minimum width=6.6cm},
+  lens/.style={rectangle, rounded corners=6pt, draw=notebar, line width=0.6pt,
+               fill=notebg, align=center, inner sep=7pt, text width=5.0cm, text=ink!88},
+  posbox/.style={rectangle, rounded corners=6pt, draw=accent, line width=1pt,
+                 fill=accentbg, align=center, inner sep=8pt, minimum width=7.4cm, text=ink},
+  flow/.style={-{Latex[length=2mm, width=1.6mm]}, draw=notebar, line width=0.7pt},
+  conv/.style={-{Latex[length=2mm, width=1.6mm]}, draw=accent!55, line width=0.7pt},
+]
+
+\node[qbox] (Q) at (0,4.55) {{\kaiM\color{accent} 思维 ＝ 符号操作吗？}\\[1pt]
+  {\scriptsize\color{ink!65} 机器在“思考”吗 · 四种视角的交锋}};
+
+\node[lens] (L1) at (-3.25, 2.0) {{\kaiM\color{accent} ① 中文房间 · 塞尔}\\[2pt]
+  语法 $\neq$ 语义；因果结构反击 $\to$ 世界模型（Othello-GPT）};
+\node[lens] (L2) at ( 3.25, 2.0) {{\kaiM\color{accent} ② 维特根斯坦}\\[2pt]
+  “意义即用法”：已习得用法，但缺“接地 / 生活形式”};
+\node[lens] (L3) at (-3.25,-0.55) {{\kaiM\color{accent} ③ 庄子 · 赖尔}\\[2pt]
+  how $\neq$ that；LLM 是“数字庖丁”——有 how 无 that};
+\node[lens] (L4) at ( 3.25,-0.55) {{\kaiM\color{accent} ④ 佛教唯识 · 无我}\\[2pt]
+  解散“谁在思考”的主体预设：不必有统一主体才算“懂”};
+
+\node[posbox] (P) at (0,-3.15) {{\kaiM 我的综合立场}\\[1pt]
+  思维是“多维 · 程度性”的能力束\\
+  {\scriptsize\color{ink!82}LLM 有真实的功能性理解，缺接地与默会之知}};
+
+\draw[flow] (Q.south) to[out=-125,in=65]  (L1.north);
+\draw[flow] (Q.south) to[out=-55, in=115] (L2.north);
+\draw[flow] (L1.south) -- (L3.north);
+\draw[flow] (L2.south) -- (L4.north);
+\draw[conv] (L3.south) to[out=-65,in=135] (P.north);
+\draw[conv] (L4.south) to[out=-115,in=45] (P.north);
+
+\end{tikzpicture}
+\end{document}
