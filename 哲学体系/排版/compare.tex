@@ -1,0 +1,78 @@
+\documentclass[12pt,a4paper,fontset=none]{ctexart}
+\usepackage{geometry}
+\geometry{top=2cm,bottom=2cm,left=2.4cm,right=2.4cm}
+\usepackage{xcolor}
+\definecolor{ink}{HTML}{1F2D3D}
+\definecolor{accent}{HTML}{8C2A2A}
+\definecolor{rule}{HTML}{C9A24B}
+\definecolor{gray}{HTML}{9AA7B4}
+
+% 候选字体
+\newCJKfontfamily\heiR{Noto Sans CJK SC}            % 思源黑体 正
+\newCJKfontfamily\heiB{Noto Sans CJK SC}[BoldFont={Noto Sans CJK SC Bold}]
+\newCJKfontfamily\songR{Noto Serif CJK SC}          % 思源宋体 正
+\newCJKfontfamily\songB{Noto Serif CJK SC}[BoldFont={Noto Serif CJK SC Bold}]
+\newCJKfontfamily\kaiR{LXGW WenKai}                 % 霞鹜文楷 正
+\newCJKfontfamily\kaiM{LXGW WenKai Medium}          % 霞鹜文楷 中
+
+\setCJKmainfont{Noto Sans CJK SC}
+\linespread{1.5}
+\setlength{\parindent}{2em}
+
+\newcommand{\sep}{\par\vspace{4pt}{\color{rule}\rule{\linewidth}{0.6pt}}\par\vspace{10pt}}
+
+\begin{document}
+\thispagestyle{empty}
+
+\begin{center}
+{\heiB\bfseries\Large\color{ink} 中文字体对比样张}\\[2pt]
+{\heiR\small\color{gray} 同一段文字 · 三种字体 · 供挑选}
+\end{center}
+\vspace{6pt}
+{\color{rule}\rule{\linewidth}{1pt}}
+\vspace{14pt}
+
+% ---------- 1 思源黑体 ----------
+{\heiR
+{\heiB\bfseries\large\color{accent} 一、思源黑体（Noto Sans CJK SC）—— 当前所用 · 苹方风格}\par
+\vspace{4pt}
+{\small\color{gray} 现代无衬线 · 屏幕与封面友好 · 干净利落，偏“产品/科技”气质}\par
+\vspace{6pt}
+{\heiB\bfseries\large 第六章\quad 康德的哥白尼革命}\par
+休谟的炸弹惊醒了一个德国人康德。他憋出了人类思想史上最艰深也最伟大的一招：不是我们的认识符合对象，而是\textbf{对象符合我们的认识}。我们永远看不到“物自体”，只能看到经过眼镜加工的“现象”。\quad{\color{accent}“我思故我在。”}
+}
+\sep
+
+% ---------- 2 思源宋体 ----------
+{\songR
+{\songB\bfseries\large\color{accent} 二、思源宋体（Noto Serif CJK SC）—— 经典书卷气}\par
+\vspace{4pt}
+{\heiR\small\color{gray} 衬线/宋体 · 长文阅读耐看 · 印刷书籍质感，偏“典籍/学术”气质}\par
+\vspace{6pt}
+{\songB\bfseries\large 第六章\quad 康德的哥白尼革命}\par
+休谟的炸弹惊醒了一个德国人康德。他憋出了人类思想史上最艰深也最伟大的一招：不是我们的认识符合对象，而是\textbf{对象符合我们的认识}。我们永远看不到“物自体”，只能看到经过眼镜加工的“现象”。\quad{\color{accent}“我思故我在。”}
+}
+\sep
+
+% ---------- 3 霞鹜文楷 ----------
+{\kaiR
+{\kaiM\large\color{accent} 三、霞鹜文楷（LXGW WenKai）—— 温润文学感（推荐用于故事）}\par
+\vspace{4pt}
+{\heiR\small\color{gray} 楷体风 · 手写温度 · 最适合散文/故事正文，偏“人文/书信”气质}\par
+\vspace{6pt}
+{\kaiM\large 第六章\quad 康德的哥白尼革命}\par
+休谟的炸弹惊醒了一个德国人康德。他憋出了人类思想史上最艰深也最伟大的一招：不是我们的认识符合对象，而是{\kaiM 对象符合我们的认识}。我们永远看不到“物自体”，只能看到经过眼镜加工的“现象”。\quad{\color{accent}“我思故我在。”}
+}
+\sep
+
+% ---------- 小字测试（验证可读性）----------
+{\heiB\bfseries\color{ink} 小字号可读性（10pt，同句三体对照）：}\par
+\vspace{4pt}
+{\small\heiR 黑体：道可道，非常道；名可名，非常名。无名天地之始，有名万物之母。}\par
+{\small\songR 宋体：道可道，非常道；名可名，非常名。无名天地之始，有名万物之母。}\par
+{\small\kaiR 文楷：道可道，非常道；名可名，非常名。无名天地之始，有名万物之母。}\par
+
+\vfill
+{\color{rule}\rule{\linewidth}{1pt}}\par\vspace{4pt}
+{\heiR\small\color{gray} 建议：故事/散文用「霞鹜文楷」或「思源宋体」更有书卷气；旗舰范本（含表格/术语/代码感）保持「思源黑体」更清晰。可两份文档用不同字体。}
+\end{document}
