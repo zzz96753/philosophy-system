@@ -20,3 +20,5 @@ logs/
 **/排版/book/
 **/排版/book.pdf
 **/排版/bk*.png
+__pycache__/
+*.pyc
