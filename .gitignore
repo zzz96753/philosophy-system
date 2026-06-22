@@ -3,3 +3,11 @@ logs/
 *.swp
 *.swo
 *~
+
+# LaTeX 构建产物
+build/
+*.aux
+*.toc
+*.out
+*.synctex.gz
+*.png
