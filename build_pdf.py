@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""把具身智能面试题库的 Markdown 合并转换为一本 LaTeX 书并编译成 PDF。"""
+"""把具身智能面试题库的 Markdown 合并转换为一本 LaTeX 书并编译成 PDF（美化版）。"""
 import re, os
 
 BASE = "面试准备/具身智能大模型"
@@ -22,7 +22,6 @@ FILES = [
     "深度补充/B-核心算法代码.md",
 ]
 
-# ---- 文本段中的符号 -> LaTeX（math 与 code 段不走这里）----
 SYM = {
     '→': r'$\rightarrow$', '←': r'$\leftarrow$', '↑': r'$\uparrow$', '↓': r'$\downarrow$',
     '⇒': r'$\Rightarrow$', '×': r'$\times$', '≤': r'$\le$', '≥': r'$\ge$',
@@ -32,13 +31,12 @@ SYM = {
     'ε': r'$\varepsilon$', 'α': r'$\alpha$', 'β': r'$\beta$', 'γ': r'$\gamma$',
     'δ': r'$\delta$', 'θ': r'$\theta$', 'λ': r'$\lambda$', 'μ': r'$\mu$',
     'σ': r'$\sigma$', 'τ': r'$\tau$', 'ω': r'$\omega$', 'π': r'$\pi$',
-    'φ': r'$\phi$', 'Δ': r'$\Delta$', 'γ': r'$\gamma$',
-    '★': r' \starf ', '☆': r' \staro ', '◆': r' \diaf ',
+    'φ': r'$\phi$', 'Δ': r'$\Delta$',
+    '★': r'{\starf}', '☆': r'{\staro}', '◆': r'{\diaf}',
 }
-# 装饰性 emoji / 符号 -> 去除
 EMOJI = ['🔥','🎯','📌','📐','📊','💻','💡','⚙️','🤖','🧩','🚀','🎓','🌍','🧊','🏗️',
          '📑','📱','🛒','🧮','💰','✅','⚠️','🎉','💼','🦾','🤔','📈','🌟','💪','👀',
-         '🦖','🧘','🔍','🧠','🦉','✨','📝','➕','🔬','👇','🌐','⭐','️','　']
+         '🦖','🧘','🔍','🧠','🦉','✨','📝','➕','🔬','👇','🌐','⭐','️','　','📕','📚','🎤','🏆']
 
 def strip_emoji(s):
     for e in EMOJI:
@@ -61,7 +59,6 @@ def final_strip(s):
     return ''.join(c for c in s if allowed(c))
 
 def esc(s):
-    """转义普通文本中的 LaTeX 特殊字符。"""
     s = s.replace('\\', r'\textbackslash{}')
     for a, b in [('&', r'\&'), ('%', r'\%'), ('#', r'\#'), ('_', r'\_'),
                  ('{', r'\{'), ('}', r'\}'), ('~', r'\textasciitilde{}'),
@@ -70,35 +67,30 @@ def esc(s):
     return s
 
 def inline(text):
-    """处理一段行内文本：保护 math/code，处理 bold，转义，符号替换。"""
     text = strip_emoji(text)
     maths, codes = [], []
-    # 保护行内 math $...$
     def keep_math(m):
         maths.append(m.group(1)); return f'\x00M{len(maths)-1}\x00'
     text = re.sub(r'\$([^$]+)\$', keep_math, text)
-    # 保护行内 code `...`
     def keep_code(m):
         codes.append(m.group(1)); return f'\x00C{len(codes)-1}\x00'
     text = re.sub(r'`([^`]+)`', keep_code, text)
-    # 加粗 **...**
     text = re.sub(r'\*\*(.+?)\*\*', '\x01\\1\x02', text)
-    # 转义特殊字符
     text = esc(text)
-    # 符号替换
     for k, v in SYM.items():
         text = text.replace(k, v)
-    # 还原加粗标记
     text = text.replace('\x01', r'\textbf{').replace('\x02', '}')
-    # 还原 math（原样）
     for i, m in enumerate(maths):
         text = text.replace(f'\x00M{i}\x00', f'${m}$')
-    # 还原 code（转义后 \texttt）
     for i, c in enumerate(codes):
-        text = text.replace(f'\x00C{i}\x00', r'\texttt{' + esc(c) + '}')
+        e = esc(c)
+        if '/' in c:   # 路径等长 token：用可断行等宽体，避免溢出
+            repl = r'\texttt{' + e.replace('/', r'/\allowbreak ') + '}'
+        else:
+            repl = r'\hlcode{' + e + '}'
+        text = text.replace(f'\x00C{i}\x00', repl)
     return final_strip(text)
 
-# ---- 代码块符号清洗 ----
 BOX = {'─':'-','━':'-','│':'|','┃':'|','┌':'+','┐':'+','└':'+','┘':'+','├':'+',
        '┤':'+','┬':'+','┴':'+','┼':'+','╔':'+','╗':'+','╚':'+','╝':'+','║':'|',
        '═':'=','▶':'>','◀':'<','•':'*','◦':'-','·':'.'}
@@ -113,176 +105,230 @@ def clean_code(s):
     return final_strip(s)
 
 def table(rows):
-    """rows: list of cell-lists（已去掉分隔行）。"""
     n = max(len(r) for r in rows)
-    out = [r'\begin{center}\small', r'\begin{tabularx}{\linewidth}{|' + 'X|'*n + '}', r'\hline']
-    for ri, r in enumerate(rows):
+    out = [r'\begin{center}\footnotesize',
+           r'\arrayrulecolor{gray!30}',
+           r'\rowcolors{2}{white}{brandlt}',
+           r'\renewcommand{\arraystretch}{1.35}',
+           r'\begin{tabularx}{\linewidth}{' + '|' + 'X|'*n + '}', r'\hline']
+    hdr = rows[0]
+    hcells = [r'\textcolor{white}{\textbf{' + inline(c.strip()) + '}}' for c in hdr] + ['']*(n-len(hdr))
+    out.append(r'\rowcolor{brand}' + ' & '.join(hcells) + r' \\ \hline')
+    for r in rows[1:]:
         cells = [inline(c.strip()) for c in r] + ['']*(n-len(r))
         out.append(' & '.join(cells) + r' \\ \hline')
-        if ri == 0:
-            pass
-    out += [r'\end{tabularx}', r'\end{center}', '']
+    out += [r'\end{tabularx}', r'\arrayrulecolor{black}', r'\end{center}', '']
     return out
 
-def convert(md, first_title=False):
+def convert(md):
     lines = md.split('\n')
     out, i = [], 0
     while i < len(lines):
         ln = lines[i]
-        # 代码围栏
         if ln.lstrip().startswith('```'):
             lang = ln.lstrip()[3:].strip().lower()
-            i += 1
-            buf = []
+            i += 1; buf = []
             while i < len(lines) and not lines[i].lstrip().startswith('```'):
                 buf.append(clean_code(lines[i])); i += 1
-            i += 1  # 跳过结束 ```
-            style = 'pystyle' if lang in ('python','py') else 'plainstyle'
-            out.append(r'\begin{lstlisting}[style=' + style + ']')
-            out += buf
-            out.append(r'\end{lstlisting}')
-            continue
-        # 块级 display math $$...$$
+            i += 1
+            style = 'pystyle' if lang in ('python', 'py') else 'plainstyle'
+            out.append(r'\begin{lstlisting}[style=' + style + ']'); out += buf
+            out.append(r'\end{lstlisting}'); continue
         st = ln.strip()
         if st.startswith('$$'):
             body = st[2:]
-            if body.endswith('$$') and len(body) >= 2:   # 单行 $$...$$
+            if body.endswith('$$') and len(body) >= 2:
                 out.append(r'\[' + body[:-2] + r'\]'); i += 1; continue
-            buf = [body]; i += 1                          # 多行
+            buf = [body]; i += 1
             while i < len(lines) and not lines[i].strip().endswith('$$'):
                 buf.append(lines[i]); i += 1
             if i < len(lines):
                 buf.append(lines[i].strip()[:-2]); i += 1
             out.append(r'\[' + ' '.join(buf) + r'\]'); continue
-        # 表格
         if '|' in ln and i+1 < len(lines) and re.match(r'^\s*\|?[\s:|-]+\|[\s:|-]+$', lines[i+1]):
             block = []
             while i < len(lines) and '|' in lines[i]:
                 block.append(lines[i]); i += 1
             rows = []
             for bi, b in enumerate(block):
-                if bi == 1:  # 分隔行
-                    continue
-                cells = b.strip().strip('|').split('|')
-                rows.append(cells)
-            out += table(rows)
-            continue
-        # 标题
+                if bi == 1: continue
+                rows.append(b.strip().strip('|').split('|'))
+            out += table(rows); continue
         m = re.match(r'^(#{1,4})\s+(.*)$', ln)
         if m:
             level = len(m.group(1)); title = inline(m.group(2).strip())
-            if level == 1:
-                cmd = r'\section'
-            elif level == 2:
-                cmd = r'\subsection'
-            elif level == 3:
-                cmd = r'\subsubsection'
-            else:
-                cmd = r'\paragraph'
+            cmd = {1: r'\section', 2: r'\subsection', 3: r'\subsubsection'}.get(level, r'\paragraph')
             out.append(cmd + '{' + title + '}'); i += 1; continue
-        # 分隔线
         if re.match(r'^\s*---+\s*$', ln) or re.match(r'^\s*===+\s*$', ln):
-            out.append(r'\vspace{0.4em}\hrule\vspace{0.6em}'); i += 1; continue
-        # 引用
+            out.append(r'\smallskip{\color{gray!30}\hrule}\smallskip'); i += 1; continue
         if ln.lstrip().startswith('> '):
             quote = []
             while i < len(lines) and lines[i].lstrip().startswith('>'):
                 quote.append(lines[i].lstrip()[1:].lstrip()); i += 1
-            out.append(r'\begin{quoting}')
-            out.append(inline(' '.join(quote)))
-            out.append(r'\end{quoting}'); continue
-        # 列表
+            out.append(r'\begin{quotebox}'); out.append(inline(' '.join(quote)))
+            out.append(r'\end{quotebox}'); continue
         if re.match(r'^\s*([-*]|\d+\.)\s+', ln):
-            items = []
-            ordered = bool(re.match(r'^\s*\d+\.', ln))
+            items = []; ordered = bool(re.match(r'^\s*\d+\.', ln)); allcheck = True
             while i < len(lines) and re.match(r'^\s*([-*]|\d+\.)\s+', lines[i]):
-                raw = lines[i]
-                indent = len(raw) - len(raw.lstrip())
-                content = re.sub(r'^\s*([-*]|\d+\.)\s+', '', raw)
+                content = re.sub(r'^\s*([-*]|\d+\.)\s+', '', lines[i])
                 cb = re.match(r'^\[([ xX])\]\s*(.*)$', content)
                 if cb:
-                    mark = r'$\boxtimes$' if cb.group(1).lower() == 'x' else r'$\square$'
-                    items.append((indent, r'\item[' + mark + '] ' + inline(cb.group(2))))
+                    mark = r'$\boxtimes$' if cb.group(1).lower() == 'x' else r'\sq'
+                    items.append(r'\item[' + mark + '] ' + inline(cb.group(2)))
                 else:
-                    items.append((indent, r'\item ' + inline(content)))
+                    allcheck = False; items.append(r'\item ' + inline(content))
                 i += 1
-            env = 'enumerate' if ordered else 'itemize'
-            out.append(r'\begin{' + env + r'}[leftmargin=1.4em,itemsep=1pt,topsep=2pt]')
-            out += [it[1] for it in items]
-            out.append(r'\end{' + env + '}')
+            if allcheck and not ordered:
+                out.append(r'\begin{selfcheck}')
+                out.append(r'\begin{itemize}[leftmargin=1.6em,itemsep=2pt,topsep=1pt,label={}]')
+                out += items; out.append(r'\end{itemize}'); out.append(r'\end{selfcheck}')
+            else:
+                env = 'enumerate' if ordered else 'itemize'
+                out.append(r'\begin{' + env + r'}[leftmargin=1.5em,itemsep=1pt,topsep=2pt]')
+                out += items; out.append(r'\end{' + env + '}')
             continue
-        # 空行
         if ln.strip() == '':
             out.append(''); i += 1; continue
-        # 普通段落
         out.append(inline(ln) + r'\par'); i += 1
     return '\n'.join(out)
 
-# ---------- 组装 ----------
-PRE = r"""\documentclass[UTF8,a4paper,11pt,fontset=none]{ctexart}
+PRE = r"""\PassOptionsToPackage{table,dvipsnames}{xcolor}
+\documentclass[UTF8,a4paper,11pt,fontset=none]{ctexart}
 \usepackage{fontspec}
-\setCJKmainfont[AutoFakeBold=3,AutoFakeSlant=0.2]{WenQuanYi Zen Hei}
-\setCJKsansfont[AutoFakeBold=3]{WenQuanYi Zen Hei}
-\setCJKmonofont{WenQuanYi Zen Hei}
-\usepackage{amsmath,amssymb}
-\usepackage[a4paper,margin=2.2cm]{geometry}
 \usepackage{xcolor}
-\definecolor{brand}{RGB}{30,90,180}
-\definecolor{brandlt}{RGB}{235,242,252}
-\definecolor{codebg}{RGB}{248,248,248}
-\definecolor{kw}{RGB}{170,30,120}
-\definecolor{cm}{RGB}{110,130,110}
-\definecolor{st}{RGB}{30,120,60}
-\usepackage{listings}
+\usepackage{amsmath,amssymb}
+\usepackage[a4paper,margin=2.3cm,headsep=10pt]{geometry}
 \usepackage{tabularx}
+\usepackage{colortbl}
 \usepackage{enumitem}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
-\setlength{\headheight}{14pt}
-\usepackage{quoting}
-\usepackage[unicode,colorlinks,linkcolor=brand,urlcolor=brand]{hyperref}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usepackage{needspace}
+\usepackage[unicode,colorlinks,linkcolor=brand,urlcolor=accent]{hyperref}
+
+% ---------- 字体 ----------
+\setCJKmainfont{Noto Serif CJK SC}
+\newCJKfontfamily\cjksans{Noto Sans CJK SC}
+\setCJKmonofont{Noto Sans Mono CJK SC}
+\newfontfamily\codefont{Noto Sans Mono CJK SC}
+
+% ---------- 配色 ----------
+\definecolor{brand}{RGB}{34,71,123}
+\definecolor{brandlt}{RGB}{237,242,249}
+\definecolor{accent}{RGB}{0,150,136}
+\definecolor{accentlt}{RGB}{231,247,245}
+\definecolor{codebg}{RGB}{248,249,251}
+\definecolor{kw}{RGB}{170,30,120}
+\definecolor{cm}{RGB}{120,135,120}
+\definecolor{st}{RGB}{30,120,60}
+\definecolor{inlbg}{RGB}{240,240,244}
+
+% ---------- 标记 ----------
 \newcommand{\starf}{\textcolor{brand}{$\bigstar$}}
 \newcommand{\staro}{\textcolor{brand}{$\star$}}
-\newcommand{\diaf}{\textcolor{brand}{$\blacklozenge$}}
-\lstdefinestyle{pystyle}{language=Python,basicstyle=\ttfamily\footnotesize,
+\newcommand{\diaf}{\textcolor{accent}{$\blacklozenge$}}
+\newcommand{\sq}{\textcolor{brand}{$\square$}}
+\newcommand{\hlcode}[1]{\colorbox{inlbg}{\codefont\small #1}}
+
+% ---------- 代码 ----------
+\lstdefinestyle{pystyle}{language=Python,basicstyle=\codefont\scriptsize,
   keywordstyle=\color{kw}\bfseries,commentstyle=\color{cm}\itshape,
   stringstyle=\color{st},showstringspaces=false,breaklines=true,
-  columns=fullflexible,keepspaces=true,frame=single,rulecolor=\color{gray!40},
-  backgroundcolor=\color{codebg},numbers=none,extendedchars=true}
-\lstdefinestyle{plainstyle}{basicstyle=\ttfamily\footnotesize,breaklines=true,
-  columns=fullflexible,keepspaces=true,frame=single,rulecolor=\color{gray!40},
-  backgroundcolor=\color{codebg},extendedchars=true}
-\titleformat{\section}{\Large\bfseries\color{brand}}{}{0em}{}[\vspace{2pt}\hrule]
-\titleformat{\subsection}{\large\bfseries\color{brand!85!black}}{}{0em}{}
-\titleformat{\subsubsection}{\normalsize\bfseries}{}{0em}{}
-\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
-\emergencystretch=3em
-\hyphenpenalty=1000\sloppy
+  columns=fullflexible,keepspaces=true,frame=leftline,framerule=2pt,
+  rulecolor=\color{accent},backgroundcolor=\color{codebg},
+  xleftmargin=10pt,aboveskip=8pt,belowskip=8pt,extendedchars=true}
+\lstdefinestyle{plainstyle}{basicstyle=\codefont\scriptsize,breaklines=true,
+  columns=fullflexible,keepspaces=true,frame=leftline,framerule=2pt,
+  rulecolor=\color{brand!50},backgroundcolor=\color{codebg},
+  xleftmargin=10pt,aboveskip=8pt,belowskip=8pt,extendedchars=true}
+
+% ---------- 标题样式 ----------
+\titleformat{\section}
+  {\cjksans\LARGE\bfseries\color{brand}}
+  {\colorbox{brand}{\color{white}\cjksans\,\thesection\,}}{0.6em}{}
+  [\vspace{1.5pt}{\color{accent}\titlerule[2pt]}]
+\titleformat{\subsection}
+  {\cjksans\large\bfseries\color{brand}}{}{0em}
+  {\textcolor{accent}{\rule[-0.12em]{3.5pt}{1.15em}}\,}
+\titleformat{\subsubsection}
+  {\cjksans\normalsize\bfseries\color{brand!75!black}}{}{0em}{}
+\titlespacing{\section}{0pt}{2.4ex}{1.4ex}
+\titlespacing{\subsection}{0pt}{1.8ex}{0.8ex}
+
+% ---------- 引用框 / 自测框 ----------
+\newtcolorbox{quotebox}{enhanced,breakable,colback=accentlt,colframe=accent,
+  boxrule=0pt,leftrule=3.5pt,arc=2pt,boxsep=3pt,left=8pt,right=7pt,top=5pt,bottom=5pt,
+  fontupper=\itshape}
+\newtcolorbox{selfcheck}{enhanced,breakable,colback=brandlt,colframe=brand!55,
+  boxrule=0.6pt,arc=3pt,title={\cjksans\bfseries 自测清单},coltitle=white,
+  colbacktitle=brand,attach boxed title to top left={xshift=8pt,yshift=-2pt},
+  boxed title style={arc=2pt,boxrule=0pt},left=8pt,right=7pt,top=8pt,bottom=6pt}
+
+% ---------- 页眉页脚 ----------
+\setlength{\headheight}{15pt}
 \pagestyle{fancy}\fancyhf{}
-\fancyhead[L]{\small\color{brand}具身智能大模型 · 面试题库}
-\fancyhead[R]{\small\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\cjksans\color{brand}具身智能大模型 · 面试题库与精讲}
+\fancyhead[R]{\small\cjksans\color{brand}\thepage}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\emergencystretch=3em\hyphenpenalty=1000\sloppy
+\renewcommand{\arraystretch}{1.2}
+
 \begin{document}
-\begin{titlepage}\centering
-\vspace*{2.5cm}
-{\Huge\bfseries\color{brand} 具身智能大模型\\[6pt] 面试题库与精讲}\\[1.2cm]
-{\Large Embodied AI \& VLA Interview Handbook}\\[2cm]
-{\large 12 大模块 \quad 78 道高频题 \quad 数理推导 + PyTorch 代码}\\[0.6cm]
-{\large 从基础概念到 SOTA（RT / OpenVLA / $\pi_0$ / RDT）}\\[3cm]
-{\large 整理：\underline{\hspace{4cm}}}\\[0.4cm]
-{\large 版本 v1.0}\\
-\vfill
-{\small 本资料为学习整理，仅供个人备考使用。}
+% ================= 封面 =================
+\begin{titlepage}\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[brand] ([yshift=-5cm]current page.north west) rectangle (current page.north east);
+  \fill[accent] ([yshift=-5cm]current page.north west) rectangle ([yshift=-5.18cm]current page.north east);
+  \fill[brand] (current page.south west) rectangle ([yshift=1.4cm]current page.south east);
+  % 主标题（band 内）
+  \node[anchor=north,text=white,align=center,inner sep=0pt]
+     at ([yshift=-1.35cm]current page.north)
+     {\cjksans\bfseries\fontsize{38}{44}\selectfont 具身智能大模型\\[8pt]
+      \fontsize{26}{30}\selectfont 面试题库与精讲};
+  % 英文副标题（band 下方）
+  \node[anchor=north,text=brand,align=center]
+     at ([yshift=-6.3cm]current page.north)
+     {\itshape\Large Embodied AI \& VLA Interview Handbook};
+  % 卖点框（页面中部）
+  \node[anchor=center,align=center,text width=0.76\paperwidth,
+        fill=brandlt,draw=brand,line width=1pt,rounded corners=5pt,inner sep=14pt]
+     at ([yshift=0.6cm]current page.center)
+     {\cjksans\large 12 大模块 \quad\textbullet\quad 78 道高频题 \quad\textbullet\quad
+      数理推导 $+$ PyTorch 代码\\[8pt]
+      从基础概念到 SOTA（RT / OpenVLA / $\pi_0$ / RDT）};
+  % 署名与版本
+  \node[anchor=south,align=center]
+     at ([yshift=3.0cm]current page.south)
+     {\large\cjksans 整理：\underline{\hspace{4.5cm}}\\[12pt]
+      \large\cjksans\bfseries\color{brand} 版本 v1.1};
+  % 底部 band 文字
+  \node[anchor=south,text=white,align=center]
+     at ([yshift=0.45cm]current page.south)
+     {\cjksans\small 学习整理 · 仅供个人备考使用};
+\end{tikzpicture}
 \end{titlepage}
-\tableofcontents
-\newpage
+
+% ================= 目录 =================
+\thispagestyle{fancy}
+{\cjksans\bfseries\Large\color{brand} 目\quad 录}\par\vspace{0.4em}
+{\color{accent}\hrule height 1.5pt}\vspace{1em}
+\makeatletter
+\renewcommand{\l@section}[2]{\vskip4pt{\cjksans\bfseries\color{brand}#1\hfill#2}\par}
+\renewcommand{\l@subsection}[2]{\small\hspace{1.4em}#1\dotfill#2\par}
+\makeatother
+\@starttoc{toc}
+\clearpage
 """
 POST = r"\end{document}"
 
 parts = [PRE]
 for f in FILES:
-    p = os.path.join(BASE, f)
-    md = open(p, encoding='utf-8').read()
+    md = open(os.path.join(BASE, f), encoding='utf-8').read()
     parts.append('% ===== ' + f + ' =====')
     parts.append(convert(md))
     parts.append(r'\clearpage')
