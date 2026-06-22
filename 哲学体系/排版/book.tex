@@ -4,8 +4,8 @@
 \usepackage{geometry}
 \geometry{top=2.6cm,bottom=2.6cm,left=2.7cm,right=2.7cm}
 
-% ---------- 字体（霞鹜文楷；正文用 Medium 求黑实，AutoFakeBold 保留加粗对比）----------
-\setCJKmainfont{LXGW WenKai Medium}[AutoFakeBold=2.2]
+% ---------- 字体（霞鹜文楷 Medium 求黑实；AutoFakeBold 保留加粗对比）----------
+\setCJKmainfont{LXGW WenKai Medium}[AutoFakeBold=2.5]
 \setCJKsansfont{LXGW WenKai Medium}[AutoFakeBold=2.5]
 \setCJKmonofont{LXGW WenKai Medium}
 \newCJKfontfamily\hei{LXGW WenKai Medium}[AutoFakeBold=3]
@@ -59,16 +59,21 @@
 \fancyfoot[C]{\small\color{gray}\thepage}
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 
-% ---------- 章节样式 ----------
+% ---------- 章节样式（颜色放在 name/titleformat 里，避免漏入正文）----------
 \ctexset{
-  chapter/format = \raggedright\hei\bfseries\color{accent},
-  chapter/nameformat = \Large,
-  chapter/titleformat = \Huge,
+  chapter/format = \raggedright\hei\bfseries,
+  chapter/nameformat = \Large\color{accent},
+  chapter/titleformat = \Huge\color{accent},
   chapter/aftername = \\[0.3em],
   chapter/afterskip = 2.4ex,
-  section/format = \large\hei\bfseries\color{ink},
-  subsection/format = \hei\bfseries\color{ink},
+  section/format = \large\hei\bfseries,
+  section/nameformat = \color{ink},
+  section/titleformat = \color{ink},
+  subsection/format = \hei\bfseries,
+  subsection/nameformat = \color{ink},
+  subsection/titleformat = \color{ink},
 }
+\AtBeginDocument{\color{black}}  % 正文默认纯黑
 
 \begin{document}
 
@@ -124,7 +129,7 @@
 \end{center}
 
 \vspace{1em}
-\noindent\notolight\color{gray}\small 体例：问题驱动的横切探究（深度思考 × 综合应用 × 落地）。各章内的跨文引用在合订本中已转为纯文字；完整链接见在线 Obsidian 版。
+\noindent{\notolight\color{gray}\small 体例：问题驱动的横切探究（深度思考 × 综合应用 × 落地）。各章内的跨文引用在合订本中已转为纯文字；完整链接见在线 Obsidian 版。}
 
 \tableofcontents
 
