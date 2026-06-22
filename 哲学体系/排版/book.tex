@@ -1,0 +1,141 @@
+\documentclass[11pt,a4paper,oneside,fontset=none]{ctexbook}
+
+% ---------- 页面 ----------
+\usepackage{geometry}
+\geometry{top=2.6cm,bottom=2.6cm,left=2.7cm,right=2.7cm}
+
+% ---------- 字体（霞鹜文楷）----------
+\setCJKmainfont{LXGW WenKai}[BoldFont={LXGW WenKai Medium}]
+\setCJKsansfont{LXGW WenKai Medium}
+\setCJKmonofont{LXGW WenKai}
+\newCJKfontfamily\hei{LXGW WenKai Medium}
+\newCJKfontfamily\notolight{LXGW WenKai Light}
+
+% ---------- 颜色 ----------
+\usepackage{xcolor}
+\definecolor{ink}{HTML}{1F2D3D}
+\definecolor{accent}{HTML}{8C2A2A}
+\definecolor{rule}{HTML}{C9A24B}
+\definecolor{gray}{HTML}{9AA7B4}
+
+% ---------- pandoc 表格/列表所需 ----------
+\usepackage{longtable,booktabs,array}
+\usepackage{calc}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+\usepackage{footnote}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% ---------- 图 / 链接 ----------
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+
+% ---------- 补字形：文楷缺的符号映射到数学字体 ----------
+\usepackage{newunicodechar}
+\newunicodechar{≠}{\ensuremath{\neq}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{↑}{\ensuremath{\uparrow}}
+\newunicodechar{↓}{\ensuremath{\downarrow}}
+\newunicodechar{⇒}{\ensuremath{\Rightarrow}}
+\newunicodechar{Φ}{\ensuremath{\Phi}}
+
+% ---------- 代码块（verbatim）缩小并允许CJK ----------
+\makeatletter
+\def\verbatim@font{\ttfamily\small}
+\makeatother
+
+% ---------- 版式 ----------
+\linespread{1.42}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0.2pt}
+\fancyhead[L]{\small\hei\color{gray}哲学 × AI 探究集}
+\fancyhead[R]{\small\hei\color{gray}\leftmark}
+\fancyfoot[C]{\small\color{gray}\thepage}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+
+% ---------- 章节样式 ----------
+\ctexset{
+  chapter/format = \raggedright\hei\bfseries\color{accent},
+  chapter/nameformat = \Large,
+  chapter/titleformat = \Huge,
+  chapter/aftername = \\[0.3em],
+  chapter/afterskip = 2.4ex,
+  section/format = \large\hei\bfseries\color{ink},
+  subsection/format = \hei\bfseries\color{ink},
+}
+
+\begin{document}
+
+% ================= 封面 =================
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+\vspace*{3cm}
+{\color{rule}\rule{0.55\textwidth}{1pt}}\\[1.2cm]
+{\Huge\hei\bfseries\color{ink} 哲学 × AI 探究集}\\[0.8cm]
+{\LARGE\notolight\color{accent} 把哲学难题，做成可证伪的研究纲领}\\[1.2cm]
+{\color{rule}\rule{0.55\textwidth}{1pt}}\\[2.4cm]
+{\large\notolight\color{ink!80} 一个范本 · 一条主线 · 六场探究\\[0.5em]
+理解 · 推理 · 价值 · 评测 · 接地}\\[3.2cm]
+{\normalsize\color{gray} 哲学体系 · 探究层合订}\\[0.3em]
+{\small\color{gray} 2026}
+\end{titlepage}
+
+\frontmatter
+\pagestyle{fancy}
+
+% ================= 前言 =================
+\chapter*{前言：一把手术刀，六个切口}
+\addcontentsline{toc}{chapter}{前言}
+
+这本小书把"哲学体系/探究"层的六篇合在一起。它们不是哲学综述，而是同一种动作的六次施展：\textbf{亲自把一个真问题想到底，并把它落成 AI 研究里能动手的纲领}。
+
+每篇都遵循同一套骨架——也是它们共享的方法论内核：
+
+\begin{enumerate}
+\item \textbf{拆维度}：把一个含混大词（理解／忠实／价值／真懂／接地）切成可分别测量的读法，分清真战场与陷阱；
+\item \textbf{因果干预判据}：把判据一律升级到"可因果操纵"层次（探针 → activation patching／交换干预／引导向量）；
+\item \textbf{东方重构}：引一个东方视角去\emph{改写问法}，而非装点——唯识、道禅、儒家、因明、名色各登场一次；
+\item \textbf{可证伪承诺}：给出会推翻自己立场的具体条件，预注册后再开跑；
+\item \textbf{审计表}：把哲学压成一张读论文／查模型时能直接用的清单。
+\end{enumerate}
+
+\noindent\textbf{一条暗线}贯穿六篇：反复出现同一个缝——\textbf{外部表现 与 内部实在 的分离}。01 的"可解码×不被使用"、02 的"承载高×揭示低"、03 的"表面稳×表征不稳"、04 的"答对×非因真值"、05 的"有名×无色"——都是它。安全与可信的风险，大多藏在这条缝里。
+
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{章} & \textbf{在主线中的位置} \\
+\midrule
+00　什么是思维 & 总纲 · 范本（思维是多维·程度性的能力）\\
+01　世界模型还是统计捷径 & ① 理解：内部表征是否真实 \\
+02　思维链是计算还是表演 & ② 推理：外显推理是否可信 \\
+03　价值对齐预设意向性吗 & ③ 价值：倾向是否实在稳定 \\
+04　葛梯尔式评测 & 元层：评测在测什么 \\
+05　接地能否重塑抽象 & 地基：纯文本缺了什么 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{1em}
+\noindent\notolight\color{gray}\small 体例：问题驱动的横切探究（深度思考 × 综合应用 × 落地）。各章内的跨文引用在合订本中已转为纯文字；完整链接见在线 Obsidian 版。
+
+\tableofcontents
+
+% ================= 正文 =================
+\mainmatter
+
+\input{book/ch00.tex}
+\input{book/ch01.tex}
+\input{book/ch02.tex}
+\input{book/ch03.tex}
+\input{book/ch04.tex}
+\input{book/ch05.tex}
+
+\end{document}

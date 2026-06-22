@@ -27,7 +27,10 @@ latexmk -xelatex story.tex       # 《哲学的故事》
 latexmk -xelatex flagship.tex    # 《什么是思维》（依赖 img/tension-map.png）
 latexmk -xelatex compare.tex          # 字体对比样张
 xelatex tikz-tension-map.tex && cp tikz-tension-map.pdf img/tension-map.pdf  # 重绘张力图
+./build-book.sh                  # 《哲学×AI探究集》合订本（依赖 pandoc，由 ../探究/*.md 生成）
 ```
+
+> 合订本依赖 `pandoc`：`apt-get install -y pandoc`。
 
 ## 文件
 
@@ -35,6 +38,7 @@ xelatex tikz-tension-map.tex && cp tikz-tension-map.pdf img/tension-map.pdf  # �
 |------|------|
 | `story.tex` | 《哲学的故事·一场跨越2500年的对话》源码 |
 | `flagship.tex` | 旗舰范本《什么是思维（机器在思考吗）》源码 |
+| `book.tex` + `build-book.sh` | 《哲学×AI探究集》合订本（探究 00–05 → ctexbook） |
 | `tikz-tension-map.tex` | 论辩张力地图源码（手绘 TikZ：一问题→四视角→一立场） |
 | `img/tension-map.pdf` | 张力地图成品（由上面的 TikZ 编译，被 flagship 引用） |
 | `compare.tex` | 三体（文楷/宋体/黑体）对比样张 |
