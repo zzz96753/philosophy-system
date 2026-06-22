@@ -318,10 +318,8 @@ PRE = r"""\PassOptionsToPackage{table,dvipsnames}{xcolor}
 {\cjksans\bfseries\Large\color{brand} 目\quad 录}\par\vspace{0.4em}
 {\color{accent}\hrule height 1.5pt}\vspace{1em}
 \makeatletter
-\renewcommand{\l@section}[2]{\vskip4pt{\cjksans\bfseries\color{brand}#1\hfill#2}\par}
-\renewcommand{\l@subsection}[2]{\small\hspace{1.4em}#1\dotfill#2\par}
-\makeatother
 \@starttoc{toc}
+\makeatother
 \clearpage
 """
 POST = r"\end{document}"
