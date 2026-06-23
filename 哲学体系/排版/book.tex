@@ -10,6 +10,8 @@
 \setCJKmonofont{LXGW WenKai Medium}
 \newCJKfontfamily\hei{LXGW WenKai Medium}[AutoFakeBold=3]
 \newCJKfontfamily\notolight{LXGW WenKai Light}
+% 让中英文引号、破折号归为 CJK 类，用文楷渲染成全角（修引号变西文的问题）
+\xeCJKDeclareCharClass{CJK}{"2018, "2019, "201C, "201D, "2014, "2026}
 
 % ---------- 颜色 ----------
 \usepackage{xcolor}
