@@ -4,12 +4,14 @@
 \usepackage{geometry}
 \geometry{top=2.8cm,bottom=2.8cm,left=2.8cm,right=2.8cm}
 
-% ---------- 字体（霞鹜文楷 / 温润书卷气：正文Regular·标题Medium·轻字Light）----------
-\setCJKmainfont{LXGW WenKai}[BoldFont={LXGW WenKai Medium}]
-\setCJKsansfont{LXGW WenKai}
-\newCJKfontfamily\hei{LXGW WenKai}[BoldFont={LXGW WenKai Medium}]
+% ---------- 字体（霞鹜文楷 Medium 求黑实；AutoFakeBold 保留加粗对比）----------
+\setCJKmainfont{LXGW WenKai Medium}[AutoFakeBold=2.5]
+\setCJKsansfont{LXGW WenKai Medium}[AutoFakeBold=2.5]
+\newCJKfontfamily\hei{LXGW WenKai Medium}[AutoFakeBold=3]
 \newCJKfontfamily\notolight{LXGW WenKai Light}
 \newCJKfontfamily\notomed{LXGW WenKai Medium}
+% 引号/破折号/省略号归 CJK 类，用文楷渲染成全角
+\xeCJKDeclareCharClass{CJK}{"2018, "2019, "201C, "201D, "2014, "2026}
 
 % ---------- 颜色 ----------
 \usepackage{xcolor}
@@ -35,13 +37,16 @@
 
 % ---------- 章节样式 ----------
 \ctexset{
-  section/format = \Large\hei\bfseries\color{accent},
+  section/format = \Large\hei\bfseries,
+  section/titleformat = \color{accent},
   section/beforeskip = 2.2ex,
   section/afterskip = 1.2ex,
-  subsection/format = \large\hei\bfseries\color{ink},
+  subsection/format = \large\hei\bfseries,
+  subsection/titleformat = \color{ink},
   subsection/beforeskip = 1.6ex,
   subsection/afterskip = 0.8ex,
 }
+\AtBeginDocument{\color{black}}  % 正文默认纯黑
 
 % ---------- 页眉页脚 ----------
 \pagestyle{fancy}
