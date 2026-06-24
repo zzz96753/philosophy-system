@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""把具身智能面试题库的 Markdown 合并转换为一本 LaTeX 书并编译成 PDF（美化版）。"""
-import re, os
+"""把具身智能面试题库的 Markdown 合并转换为一本 LaTeX 书并编译成 PDF（美化版）。
+用法: python3 build_pdf.py        # 完整版
+      python3 build_pdf.py trial  # 免费试读版
+"""
+import re, os, sys
 
+TRIAL = len(sys.argv) > 1 and sys.argv[1] == 'trial'
 BASE = "面试准备/具身智能大模型"
 FILES = [
     "00-题库总览.md",
@@ -21,6 +25,8 @@ FILES = [
     "深度补充/A-数学基础速查.md",
     "深度补充/B-核心算法代码.md",
 ]
+if TRIAL:   # 试读版：完整题库总览 + M1 + M3(重头戏) 两个样章
+    FILES = ["00-题库总览.md", "逐题精讲/01-基础概念.md", "逐题精讲/03-VLA模型.md"]
 
 SYM = {
     '→': r'$\rightarrow$', '←': r'$\leftarrow$', '↑': r'$\uparrow$', '↓': r'$\downarrow$',
@@ -324,14 +330,49 @@ PRE = r"""\PassOptionsToPackage{table,dvipsnames}{xcolor}
 """
 POST = r"\end{document}"
 
-parts = [PRE]
+CTA = r"""\clearpage\thispagestyle{fancy}
+\vspace*{1cm}
+\begin{tcolorbox}[enhanced,colback=brandlt,colframe=brand,boxrule=1.2pt,arc=5pt,
+  title={\cjksans\bfseries\Large 获取完整版},coltitle=white,colbacktitle=brand,
+  fonttitle=\cjksans,left=14pt,right=14pt,top=12pt,bottom=12pt]
+\cjksans\normalsize
+你正在阅读的是\textbf{免费试读版}，包含\textbf{完整题库总览（78 题全目录）}以及
+\textbf{M1 基础概念}、\textbf{M3 VLA 模型}两个完整精讲模块。
+\par\vspace{8pt}
+{\color{brand}\bfseries 完整版（v1.1 · 54 页）另含以下全部内容：}
+\begin{itemize}[leftmargin=1.4em,itemsep=3pt,topsep=4pt]
+\item \textbf{逐题精讲 M2、M4--M12}：多模态 VLM、模仿学习与 Diffusion Policy、强化学习、
+世界模型、数据与 Sim2Real、3D 感知、规划控制、SOTA 论文、工程部署、开放题与项目面
+\item \textbf{深度补充 A · 数理基础}：attention、对比学习、DDPM、flow matching、CVAE、PPO、旋转表示
+\item \textbf{深度补充 B · PyTorch 代码}：Diffusion Policy、ACT、PPO、6D 旋转、极简 VLA 等核心实现
+\end{itemize}
+\vspace{6pt}
+{\color{accent}\bfseries 获取方式：}\quad 小红书主页「\underline{\hspace{2.5cm}}」\quad/\quad
+公众号「\underline{\hspace{2.5cm}}」回复 \textbf{具身}\quad/\quad 微信 \underline{\hspace{2.5cm}}
+\end{tcolorbox}
+\vfill
+\begin{center}\small\color{gray}
+本资料为学习整理，仅供个人备考使用，请勿用于商业传播。
+\end{center}
+"""
+
+pre = PRE
+if TRIAL:
+    pre = pre.replace('版本 v1.1', r'【免费试读版】')
+    pre = pre.replace('学习整理 · 仅供个人备考使用',
+                      r'免费试读版 · 完整版获取见文末')
+
+parts = [pre]
 for f in FILES:
     md = open(os.path.join(BASE, f), encoding='utf-8').read()
     parts.append('% ===== ' + f + ' =====')
     parts.append(convert(md))
     parts.append(r'\clearpage')
+if TRIAL:
+    parts.append(CTA)
 parts.append(POST)
 
 os.makedirs('build', exist_ok=True)
-open('build/handbook.tex', 'w', encoding='utf-8').write('\n'.join(parts))
-print("生成 build/handbook.tex，长度", len('\n'.join(parts)), "字符")
+name = 'trial' if TRIAL else 'handbook'
+open(f'build/{name}.tex', 'w', encoding='utf-8').write('\n'.join(parts))
+print(f"生成 build/{name}.tex，长度", len('\n'.join(parts)), "字符")
